@@ -1,5 +1,7 @@
-const wall = 554;
-const floor = 0;
+import dungeon from './dungeon.js'
+import turnManager from './turnManager.js'
+import Player from './player.js'
+
 const tileSize = 16;
 
 const scene = {
@@ -15,33 +17,15 @@ const scene = {
   },
 
   create: function () {
-    const level = [
-      [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
-      [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall],
-    ];
-
-    const tilemapConfig = {
-      data: level,
-      tileWidth: tileSize,
-      tileHeight: tileSize,
-    };
-
-    const map = this.make.tilemap(tilemapConfig);
-    const tileset = map.addTilesetImage(
-      'tiles', 'tiles', tileSize, tileSize, floor, 1);
-
-    const ground = map.createStaticLayer(floor, tileset, floor, 0)
+    dungeon.initialize(this);
+    const player = new Player(15, 15);
+    turnManager.addEntity(player);
   },
 
   update: function() {
+    if (turnManager.over()) turnManager.refresh();
+
+    turnManager.turn();
   }
 }
 
@@ -52,7 +36,7 @@ const config = {
   backgroundColor: '#000',
   parent: 'game',
   pixelArt: true,
-  zoom: 2,
+  zoom: 1,
   scene: scene,
   physics: {
     default: 'arcade',
