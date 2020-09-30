@@ -1,3 +1,5 @@
+const wall = 554;
+const floor = 0;
 const tileSize = 16;
 
 const scene = {
@@ -13,21 +15,18 @@ const scene = {
   },
 
   create: function () {
-    let level = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    const level = [
+      [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, floor, floor, floor, floor, floor, floor, floor, floor, wall],
+      [wall, wall, wall, wall, wall, wall, wall, wall, wall, wall],
     ];
-    const wall = 554;
-    const floor = 0;
-    level = level.map(r => r.map(t => t == 1 ? wall : floor));
 
     const tilemapConfig = {
       data: level,
@@ -37,9 +36,9 @@ const scene = {
 
     const map = this.make.tilemap(tilemapConfig);
     const tileset = map.addTilesetImage(
-      'tiles', 'tiles', tileSize, tileSize, 0, 1);
+      'tiles', 'tiles', tileSize, tileSize, floor, 1);
 
-    const ground = map.createStaticLayer(0, tileset, 0, 0)
+    const ground = map.createStaticLayer(floor, tileset, floor, 0)
   },
 
   update: function() {
