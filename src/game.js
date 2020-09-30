@@ -1,53 +1,62 @@
+import { defaultLevel, tileSize } from './spriteMappings';
+
 const scene = {
   preload: function () {
-    this.load.bitmapFont(
-      "arcade",
-      "../assets/font/arcade.png",
-      "../assets/font/arcade.xml")
+    this.load.spritesheet(
+      'tiles',
+      '../assets/sprite/colored.png',
+      {
+        frameWidth: 16,
+        frameHeight: 16,
+        spacing: 1
+      });
+
+    // this.load.bitmapFont(
+    //   'arcade',
+    //   '../assets/font/arcade.png',
+    //   '../assets/font/arcade.xml')
   },
 
   create: function () {
-    this.helloText = this.add
-      .bitmapText(400, 300, "arcade", "Hello Phaser")
-      .setOrigin(0.5);
+    // this.helloText = this.add
+    //   .bitmapText(400, 300, 'arcade', 'Hello Phaser')
+    //   .setOrigin(0.5);
 
-    this.cursors = this.input.keyboard.createCursorKeys();
+    //this.cursors = this.input.keyboard.createCursorKeys();
+
+    const tilemapConfig = {
+      data: defaultLevel,
+      tileWidth: tileSize,
+      tileHeight: tileSize,
+    };
+
+    const map = this.make.tilemap(tilemapConfig);
+    const tileset = map.addTilesetImage({
+      tilesetName: 'tiles',
+      key: 'tiles',
+      tileWidth: tileSize,
+      tileHeight: tileSize,
+      tileMargin: 0,
+      tileSpacing: 1
+    });
+
+    const ground = map.createStaticLayer(0, tileset, 0, 0)
   },
 
   update: function() {
-    if (this.helloText.x > 1000) this.helloText.x = -200;
-    if (this.helloText.x < -200) this.helloText.x = 1000;
-    if (this.helloText.y > 600) this.helloText.y = -50;
-    if (this.helloText.y < -50) this.helloText.y = 600;
-
-    if (this.cursors.left.isDown) {
-      this.helloText.x -= 10;
-    }
-
-    if (this.cursors.right.isDown) {
-      this.helloText.x += 10;
-    }
-
-    if (this.cursors.up.isDown) {
-      this.helloText.y -= 10;
-    }
-
-    if (this.cursors.down.isDown) {
-      this.helloText.y += 10;
-    }
   }
 }
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  backgroundColor: "#000",
-  parent: "game",
+  width: 80 * tileSize,
+  height: 50 * tileSize,
+  backgroundColor: '#000',
+  parent: 'game',
   pixelArt: true,
   scene: scene,
   physics: {
-    default: "arcade",
+    default: 'arcade',
     arcade: {
       gravity: { y: 0 }
     }
