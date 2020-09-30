@@ -7,7 +7,9 @@ const scene = {
   },
 
   create: function () {
-    this.add.bitmapText(400, 300, "arcade", "Hello Phaser").setOrigin(0.5);
+    this.add
+      .bitmapText(400, 300, "arcade", "Hello Phaser")
+      .setOrigin(0.5);
   }
 }
 
