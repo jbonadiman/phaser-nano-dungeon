@@ -48,13 +48,13 @@ export default class PlayerCharacter {
 
     const tileAtDestination = dungeon.map.getTileAt(this.x, this.y);
     if (tileAtDestination.index === dungeon.sprites.wall) {
-      this.x = this.oldX;
-      this.y = this.oldY;
+      this.x = oldX;
+      this.y = oldY;
     }
 
     if (this.x !== oldX || this.y !== oldY) {
       dungeon.map.putTileAt(this.sprite, this.x, this.y);
-      dungeon.map.putTileAt(tileAtDestination.index, this.x, this.y);
+      dungeon.map.putTileAt(dungeon.sprites.floor, oldX, oldY);
     }
   }
 

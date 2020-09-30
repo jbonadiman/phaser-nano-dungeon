@@ -1,7 +1,7 @@
 import level from './level.js'
 
 const dungeon = {
-  sprites = {
+  sprites: {
     floor: 0,
     wall: 554,
   },
