@@ -46,10 +46,6 @@ export default class PlayerCharacter {
       if (moved) {
         this.movementPoints -= 1;
 
-        // console.table({
-        //   newX, newY, x: this.x, y: this.y
-        // })
-        console.log(dungeon.level[newX][newY]);
         if (dungeon.isWalkableTile(newX, newY)) {
           dungeon.moveEntityTo(this, newX, newY);
         }
