@@ -6,9 +6,11 @@ export default class PlayerCharacter {
     this.cursors = dungeon.scene.input.keyboard.createCursorKeys();
     this.x = x;
     this.y = y;
-    this.sprite = 29;
+    this.tile = 29;
+    this.hp = 10;
+    this.moving = false;
     
-    dungeon.map.putTileAt(this.sprite, this.x, this.y);
+    dungeon.initializeEntity(this);
   }
 
   refresh() {
@@ -16,49 +18,50 @@ export default class PlayerCharacter {
   }
 
   turn() {
-    const oldX = this.x;
-    const oldY = this.y;
     let moved = false;
+    let newX = this.x;
+    let newY = this.y;
 
-    if (this.movementPoints > 0) {
+    if (this.movementPoints > 0 && !this.moving) {
       if (this.cursors.left.isDown) {
-        this.x -= 1;
+        newX -= 1;
         moved = true;
       }
 
       if (this.cursors.right.isDown) {
-        this.x += 1;
+        newX += 1;
         moved = true;
       }
 
       if (this.cursors.up.isDown) {
-        this.y -= 1;
+        newY -= 1;
         moved = true;
       }
 
       if (this.cursors.down.isDown) {
-        this.y += 1;
+        newY += 1;
         moved = true;
       }
 
       if (moved) {
         this.movementPoints -= 1;
+
+        // console.table({
+        //   newX, newY, x: this.x, y: this.y
+        // })
+        console.log(dungeon.level[newX][newY]);
+        if (dungeon.isWalkableTile(newX, newY)) {
+          dungeon.moveEntityTo(this, newX, newY);
+        }
       }
     }
 
-    const tileAtDestination = dungeon.map.getTileAt(this.x, this.y);
-    if (tileAtDestination.index === dungeon.sprites.wall) {
-      this.x = oldX;
-      this.y = oldY;
-    }
-
-    if (this.x !== oldX || this.y !== oldY) {
-      dungeon.map.putTileAt(this.sprite, this.x, this.y);
-      dungeon.map.putTileAt(dungeon.sprites.floor, oldX, oldY);
+    if (this.hp <= 3) {
+      this.sprites.tint = Phaser.Display.Color.GetColor(255, 0, 0);
     }
   }
 
   over() {
-    return this.movementPoints == 0;
+    return this.movementPoints == 0 && !this.moving;
   }
 }

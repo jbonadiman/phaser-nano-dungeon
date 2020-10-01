@@ -5,23 +5,55 @@ const dungeon = {
     floor: 0,
     wall: 554,
   },
-  
-  initialize(scene) {
-    this.scene = scene
-    scene.level = level.map(
-      row => row.map(tile => tile == 1 ? this.sprites.wall : this.sprites.floor)
-    )
+  tileSize: 16,
 
-    const tileSize = 16
+  initialize(scene) {
+    this.scene = scene;
+    this.level = level;
+
+    const levelWithTiles = level.map(
+      row => row.map(tile => tile === 1 ? this.sprites.wall : this.sprites.floor)
+    );
+
     const config = {
-        data: scene.level,
-        tileWidth: tileSize,
-        tileHeight: tileSize,
-    }
-    const map = scene.make.tilemap(config)
+      data: levelWithTiles,
+      tileWidth: this.tileSize,
+      tileHeight: this.tileSize,
+    };
+
+    const map = scene.make.tilemap(config);
     const tileset = map.addTilesetImage(
-      'tiles', 'tiles', tileSize, tileSize, 0, 1)
-    this.map = map.createDynamicLayer(0, tileset, 0, 0)
+      'tiles', 'tiles', this.tileSize, this.tileSize, 0, 1);
+
+    this.map = map.createDynamicLayer(0, tileset, 0, 0);
+  },
+
+  isWalkableTile(x, y) {
+    return this.level[y][x] !== 1;
+  },
+
+  initializeEntity(entity) {
+    const x = this.map.tileToWorldX(entity.x);
+    const y = this.map.tileToWorldY(entity.y);
+
+    entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
+    entity.sprite.setOrigin(0);
+  },
+
+  moveEntityTo(entity, x, y) {
+    entity.moving = true;
+    this.scene.tweens.add({
+      targets: entity.sprite,
+      onComplete: () => {
+        entity.moving = false;
+        entity.x = x;
+        entity.y = y;
+      },
+      x: this.map.tileToWorldX(x),
+      y: this.map.tileToWorldY(y),
+      ease: 'Power2',
+      duration: 200
+    });
   },
 }
 

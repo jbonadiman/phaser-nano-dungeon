@@ -1,23 +1,23 @@
 const turnManager = {
-  interval: 150,
   entities: new Set(),
-  lastCall: Date.now(),
   
   addEntity: (entity) => turnManager.entities.add(entity),
   removeEntity: (entity) => turnManager.entities.remove(entity),
-  refresh: () => turnManager.entities.forEach(entity => entity.refresh()),
+  refresh: () => {
+    turnManager.entities.forEach(entity => entity.refresh());
+    turnManager.currentIndex = 0;
+  },
+  currentIndex: 0,
   turn: () => {
-    const now = Date.now();
-    const limit = turnManager.lastCall + turnManager.interval;
-
-    if (now > limit) {
-      for (const entity of turnManager.entities) {
-        if (!entity.over()) {
-          entity.turn();
-          break;
-        }
+    if (turnManager.entities.size > 0) {
+      const entities = [...turnManager.entities];
+      const entity = entities[turnManager.currentIndex];
+      
+      if (!entity.over()) {
+        entity.turn();
+      } else {
+        turnManager.currentIndex++;
       }
-      turnManager.lastCall = Date.now();
     }
   },
   over: () => [...turnManager.entities].every(entity => entity.over()),
