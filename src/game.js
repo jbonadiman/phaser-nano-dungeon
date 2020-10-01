@@ -1,8 +1,9 @@
 import dungeon from './dungeon.js'
 import turnManager from './turnManager.js'
 import Player from './player.js'
+import BasicMonster from './monster.js'
 
-const tileSize = 16;
+//const tileSize = 16;
 
 const scene = {
   preload: function () {
@@ -10,16 +11,17 @@ const scene = {
       'tiles',
       '../assets/sprite/colored.png',
       {
-        frameWidth: tileSize,
-        frameHeight: tileSize,
+        frameWidth: dungeon.tileSize,
+        frameHeight: dungeon.tileSize,
         spacing: 1
       });
   },
 
   create: function () {
     dungeon.initialize(this);
-    const player = new Player(15, 15);
-    turnManager.addEntity(player);
+    dungeon.player = new Player(15, 15);
+    turnManager.addEntity(dungeon.player);
+    turnManager.addEntity(new BasicMonster(70, 8));
   },
 
   update: function() {
@@ -31,8 +33,8 @@ const scene = {
 
 const config = {
   type: Phaser.AUTO,
-  width: 80 * tileSize,
-  height: 50 * tileSize,
+  width: 80 * dungeon.tileSize,
+  height: 50 * dungeon.tileSize,
   backgroundColor: '#000',
   parent: 'game',
   pixelArt: true,

@@ -11,12 +11,12 @@ const dungeon = {
     this.scene = scene;
     this.level = level;
 
-    const levelWithTiles = level.map(
+    this.levelWithTiles = level.map(
       row => row.map(tile => tile === 1 ? this.sprites.wall : this.sprites.floor)
     );
 
     const config = {
-      data: levelWithTiles,
+      data: this.levelWithTiles,
       tileWidth: this.tileSize,
       tileHeight: this.tileSize,
     };
@@ -29,7 +29,7 @@ const dungeon = {
   },
 
   isWalkableTile(x, y) {
-    return this.level[y][x] !== 1;
+    return dungeon.map.getTileAt(x, y).index !== dungeon.sprites.wall;
   },
 
   initializeEntity(entity) {
