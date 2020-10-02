@@ -1,35 +1,36 @@
-import dungeon from './dungeon.js'
-import turnManager from './turnManager.js'
-import Player from './player.js'
-import BasicMonster from './monster.js'
-
-//const tileSize = 16;
+/* eslint-disable import/extensions */
+/* eslint-disable no-undef */
+import dungeon from './dungeon.js';
+import turnManager from './turnManager.js';
+import Player from './player.js';
+import BasicMonster from './monster.js';
 
 const scene = {
-  preload: function () {
+  preload() {
     this.load.spritesheet(
       'tiles',
       '../assets/sprite/colored.png',
       {
         frameWidth: dungeon.tileSize,
         frameHeight: dungeon.tileSize,
-        spacing: 1
-      });
+        spacing: 1,
+      },
+    );
   },
 
-  create: function () {
+  create() {
     dungeon.initialize(this);
     dungeon.player = new Player(15, 15);
     turnManager.addEntity(dungeon.player);
     turnManager.addEntity(new BasicMonster(70, 8));
   },
 
-  update: function() {
+  update() {
     if (turnManager.over()) turnManager.refresh();
 
     turnManager.turn();
-  }
-}
+  },
+};
 
 const config = {
   type: Phaser.AUTO,
@@ -39,13 +40,14 @@ const config = {
   parent: 'game',
   pixelArt: true,
   zoom: 1,
-  scene: scene,
+  scene,
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 }
-    }
-  }
-}
+      gravity: { y: 0 },
+    },
+  },
+};
 
-const game = new Phaser.Game(config);
+// eslint-disable-next-line no-new
+new Phaser.Game(config);
