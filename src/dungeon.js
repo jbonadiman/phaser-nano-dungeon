@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
 /* eslint-disable import/extensions */
 import level from './level.js';
 import turnManager from './turnManager.js';
 
 const dungeon = {
+  msgs: [],
   sprites: {
     floor: 0,
     wall: 554,
@@ -126,7 +126,7 @@ const dungeon = {
         const damage = attacker.attack();
         victim.healthPoints -= damage;
 
-        console.log(`${attacker.name} does ${damage} damage to ${victim.name} which now has ${victim.healthPoints} life left`);
+        this.log(`${attacker.name} does ${damage} damage to ${victim.name} which now has ${victim.healthPoints} life left`);
 
         if (victim.healthPoints <= 0) {
           this.removeEntity(victim);
@@ -140,6 +140,10 @@ const dungeon = {
       delay: attacker.tweens * 200,
       yoyo: true,
     });
+  },
+  log(text) {
+    this.msgs.unshift(text);
+    this.msgs = this.msgs.slice(0, 8);
   },
 };
 

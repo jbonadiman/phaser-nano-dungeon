@@ -1,5 +1,4 @@
 /* eslint-disable import/extensions */
-/* eslint-disable no-console */
 /* eslint-disable no-undef */
 import dungeon from './dungeon.js';
 
@@ -53,10 +52,37 @@ export default class BasicMonster {
   }
 
   over() {
-    return this.movementPoints === 0 && this.actionPoints === 0 && !this.moving;
+    const isOver = this.movementPoints === 0 && this.actionPoints === 0 && !this.moving;
+    if (isOver && this.UItext) {
+      this.UItext.setColor('#cfc6b8');
+    } else {
+      this.UItext.setColor('#fff');
+    }
+
+    return isOver;
   }
 
   onDestroy() {
-    console.log(`${this.name} was killed`);
+    dungeon.log(`${this.name} was killed`);
+    this.UIsprite.setAlpha(0.2);
+    this.UItext.setAlpha(0.2);
+  }
+
+  createUI(config) {
+    const {
+      scene,
+      x,
+      y,
+    } = config;
+
+    this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
+    this.UItext = scene.add.text(
+      x + 20,
+      y,
+      this.name,
+      { font: '16px Arial', fill: '#cfc6b8' },
+    );
+
+    return 30;
   }
 }

@@ -25,6 +25,10 @@ export default class PlayerCharacter {
     dungeon.initializeEntity(this);
   }
 
+  getStatsText() {
+    return `Hp: ${this.healthPoints}\nMp: ${this.movementPoints}\nAp: ${this.actionPoints}`;
+  }
+
   refresh() {
     this.movementPoints = defaultMP;
     this.actionPoints = defaultAP;
@@ -84,16 +88,81 @@ export default class PlayerCharacter {
     }
 
     if (this.healthPoints <= 6) {
-      this.sprites.tint = Phaser.Display.Color.GetColor(255, 0, 0);
+      this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
     }
   }
 
   over() {
-    return this.movementPoints === 0 && !this.moving;
+    const isOver = this.movementPoints === 0 && !this.moving;
+
+    if (isOver && this.UIHeader) {
+      this.UIHeader.setColor('#cfc6b8');
+    } else {
+      this.UIHeader.setColor('#fff');
+    }
+
+    if (this.UIStatsText) {
+      this.UIStatsText.setText(this.getStatsText());
+    }
+
+    return isOver;
   }
 
   onDestroy() {
     alert('OMG! you died!');
     location.reload();
+  }
+
+  createUI(config) {
+    const {
+      scene,
+      x,
+      y,
+    } = config;
+
+    let accumulatedHeight = 0;
+
+    this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
+
+    this.UIHeader = scene.add.text(
+      x + 20,
+      y,
+      this.name,
+      {
+        font: '16px Arial',
+        color: '#cfc6b8',
+      },
+    );
+
+    this.UIStatsText = scene.add.text(
+      x + 20,
+      y + 20,
+      this.getStatsText(),
+      {
+        font: '12px Arial',
+        fill: '#cfc6b8',
+      },
+    );
+
+    accumulatedHeight += this.UIStatsText.height + this.UIsprite.height;
+
+    const itemsPerRow = 5;
+    const rows = 2;
+    this.UIitems = [];
+
+    for (let row = 1; row <= rows; row += 1) {
+      for (let cell = 1; cell <= itemsPerRow; cell += 1) {
+        const rx = x + (25 * cell);
+        const ry = y + 50 + (25 * row);
+        this.UIitems.push(
+          scene.add.rectangle(rx, ry, 20, 20, 0xcfc6b8, 0.3).setOrigin(0),
+        );
+      }
+    }
+
+    accumulatedHeight += 90;
+
+    scene.add.line(x + 5, y + 120, 0, 10, 175, 10, 0xcfc6b8).setOrigin(0);
+    return accumulatedHeight;
   }
 }
