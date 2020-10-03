@@ -39,7 +39,7 @@ const dungeon = {
     for (let i = 0; i < allEntities.length; i += 1) {
       const entity = allEntities[i];
 
-      if (entity.x === x && entity.y === y) {
+      if (entity.sprite && entity.x === x && entity.y === y) {
         return false;
       }
     }
@@ -52,7 +52,7 @@ const dungeon = {
     for (let i = 0; i < allEntities.length; i += 1) {
       const entity = allEntities[i];
 
-      if (entity.x === x && entity.y === y) {
+      if (entity.sprite && entity.x === x && entity.y === y) {
         return entity;
       }
     }
@@ -63,15 +63,23 @@ const dungeon = {
   removeEntity(entity) {
     turnManager.entities.delete(entity);
     entity.sprite.destroy();
+    delete entity.sprite;
     entity.onDestroy();
   },
 
-  initializeEntity(entity) {
-    const x = this.map.tileToWorldX(entity.x);
-    const y = this.map.tileToWorldY(entity.y);
+  itemPicked(entity) {
+    entity.sprite.destroy();
+    delete entity.sprite;
+  },
 
-    entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
-    entity.sprite.setOrigin(0);
+  initializeEntity(entity) {
+    if (entity.x && entity.y) {
+      const x = this.map.tileToWorldX(entity.x);
+      const y = this.map.tileToWorldY(entity.y);
+
+      entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
+      entity.sprite.setOrigin(0);
+    }
   },
 
   moveEntityTo(entity, x, y) {

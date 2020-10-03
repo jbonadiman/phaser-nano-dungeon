@@ -1,22 +1,30 @@
 /* eslint-disable import/extensions */
 /* eslint-disable no-undef */
-import dungeon from './dungeon.js';
+import dungeon from '../dungeon.js';
 
-export default class BasicMonster {
+const initial = {
+  MP: 1,
+  AP: 1,
+  HP: 4,
+};
+
+export default class Skeleton {
   constructor(x, y) {
     this.name = 'Skeleton';
-    this.movementPoints = 1;
-    this.actionPoints = 3;
-    this.healthPoints = 1;
+    this.movementPoints = initial.MP;
+    this.actionPoints = initial.AP;
+    this.healthPoints = initial.HP;
     this.x = x;
     this.y = y;
     this.tile = 26;
+    this.type = 'enemy';
+
     dungeon.initializeEntity(this);
   }
 
   refresh() {
-    this.movementPoints = 1;
-    this.actionPoints = 3;
+    this.movementPoints = initial.MP;
+    this.actionPoints = initial.AP;
   }
 
   // eslint-disable-next-line class-methods-use-this
