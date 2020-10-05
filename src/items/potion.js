@@ -9,7 +9,7 @@ export default class Potion extends GenericItem {
     super(x, y);
     this.tile = 761;
     this.name = 'holy potion';
-    this.description = 'A potion that removes cursed items when equipped.';
+    this.description = 'A potion that removes cursed items when equipped';
     this.weapon = true;
 
     dungeon.initializeEntity(this);

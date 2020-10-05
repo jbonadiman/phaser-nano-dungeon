@@ -9,7 +9,7 @@ export default class CursedGem extends GenericItem {
     super(x, y);
     this.tile = 720;
     this.name = 'cursed gem';
-    this.description = 'A cursed gem that is now stuck in your hand. You can only remove it by finding a potion.';
+    this.description = 'A cursed gem that is now stuck in your hand. You can only remove it by finding a potion';
     this.actionPoints = 1;
     this.cursed = true;
 

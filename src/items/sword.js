@@ -9,7 +9,7 @@ export default class Sword extends GenericItem {
     super(x, y);
     this.tile = 994;
     this.name = 'a sword';
-    this.description = 'A basic sword. Causes 1 ~ 5 damage.';
+    this.description = 'A basic sword. Causes 1 ~ 5 damage';
     this.weapon = true;
 
     dungeon.initializeEntity(this);

@@ -1,26 +1,13 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-alert */
-/* eslint-disable class-methods-use-this */
 /* eslint-disable import/extensions */
 /* eslint-disable no-undef */
-import dungeon from './dungeon.js';
-import Sword from './items/sword.js';
+import dungeon from '../dungeon.js';
 
-const initial = {
-  MP: 1,
-  AP: 1,
-  HP: 15,
-};
-
-export default class PlayerCharacter {
+export default class GenericClass {
   constructor(x, y) {
-    this.name = 'Player';
-    this.movementPoints = initial.MP;
-    this.actionPoints = initial.AP;
-    this.healthPoints = initial.HP;
-    this.power = 1;
-
-    this.cursors = dungeon.scene.input.keyboard.createCursorKeys();
+    this.name = 'classless hero';
+    this.movementPoints = 1;
+    this.actionPoints = 1;
+    this.healthPoints = 30;
     this.x = x;
     this.y = y;
     this.tile = 29;
@@ -28,22 +15,21 @@ export default class PlayerCharacter {
     this.type = 'character';
     this.items = [];
 
-    this.items.push(new Sword());
-    this.toggleItem(0);
-
-    dungeon.initializeEntity(this);
-
     dungeon.scene.input.keyboard.on('keyup', (event) => {
-      let { key } = event;
-
-      if (!isNaN(Number(key))) {
-        if (key === 0) {
-          key = 10;
-        }
-
-        this.toggleItem(key - 1);
-      }
+      if (!this.over()) this.processInput(event);
     });
+
+    dungeon.scene.input.on('pointerup', (event) => {
+      if (!this.over()) this.processTouchInput(event);
+    });
+  }
+
+  turn() {
+    if (this.healthPoints <= (this.healthPoints * 0.4)) {
+      this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
+    }
+
+    this.refreshUI();
   }
 
   toggleItem(itemNumber) {
@@ -93,101 +79,146 @@ export default class PlayerCharacter {
     return this.items.filter((i) => i.active);
   }
 
+  currentWeapon() {
+    return this.equippedItems().find((item) => item.weapon);
+  }
+
+  attack() {
+    return this.equippedItems()
+      .reduce((total, item) => total + item.damage(), 0);
+  }
+
+  protection() {
+    return this.equippedItems()
+      .reduce((total, item) => total + item.protection(), 0);
+  }
+
   getStatsText() {
     return `Hp: ${this.healthPoints}\nMp: ${this.movementPoints}\nAp: ${this.actionPoints}`;
   }
 
   refresh() {
-    this.movementPoints = initial.MP;
-    this.actionPoints = initial.AP;
+    this.movementPoints = 1;
+    this.actionPoints = 1;
   }
 
-  attack() {
-    const items = this.equippedItems();
-    return items.reduce((total, item) => total + item.damage(), 0);
+  processTouchInput(event) {
+    const x = dungeon.map.worldToTileX(event.worldX);
+    const y = dungeon.map.worldToTileY(event.worldY);
+
+    const entity = dungeon.entityAtTile(x, y);
+
+    if (entity && entity.type === 'enemy' && this.actionPoints > 0) {
+      const currentWeapon = this.currentWeapon();
+      const rangedAttack = currentWeapon.range() > 0
+        ? currentWeapon.attackTile || currentWeapon.tile
+        : false;
+
+      const distance = dungeon.distanceBetweenEntities(this, entity);
+      if (rangedAttack && distance <= currentWeapon.range()) {
+        dungeon.attackEntity(this, entity, rangedAttack);
+        this.actionPoints -= 1;
+      }
+    }
   }
 
-  turn() {
+  processInput(event) {
     const oldX = this.x;
     const oldY = this.y;
     let moved = false;
     let newX = this.x;
     let newY = this.y;
 
-    if (this.movementPoints > 0) {
-      if (this.cursors.left.isDown) {
-        newX -= 1;
-        moved = true;
+    let { key } = event;
+
+    // Equip items
+    if (!Number.isNaN(Number(key))) {
+      if (key === 0) {
+        key = 10;
       }
 
-      if (this.cursors.right.isDown) {
-        newX += 1;
-        moved = true;
-      }
-
-      if (this.cursors.up.isDown) {
-        newY -= 1;
-        moved = true;
-      }
-
-      if (this.cursors.down.isDown) {
-        newY += 1;
-        moved = true;
-      }
-
-      if (moved) {
-        this.movementPoints -= 1;
-
-        if (!dungeon.isWalkableTile(newX, newY)) {
-          const entity = dungeon.entityAtTile(newX, newY);
-
-          if (entity && entity.type === 'enemy' && this.actionPoints > 0) {
-            dungeon.attackEntity(this, entity);
-            this.actionPoints -= 1;
-          }
-
-          if (entity && entity.type === 'item' && this.actionPoints > 0) {
-            this.items.push(entity);
-            dungeon.itemPicked(entity);
-            dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
-            this.actionPoints -= 1;
-          } else {
-            newX = oldX;
-            newY = oldY;
-          }
-        }
-
-        if (newX !== oldX || newY !== oldY) {
-          dungeon.moveEntityTo(this, newX, newY);
-        }
-      }
-
-      if (this.healthPoints <= (this.healthPoints * 0.4)) {
-        this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
-      }
+      this.toggleItem(key - 1);
     }
 
-    this.refreshUI();
+    // Spacebar check
+    if (event.keyCode === 32) {
+      this.movementPoints = 0;
+      this.actionPoints = 0;
+    }
+
+    // Movement check
+    if (event.key === 'ArrowLeft') {
+      newX -= 1;
+      moved = true;
+    }
+
+    if (event.key === 'ArrowRight') {
+      newX += 1;
+      moved = true;
+    }
+
+    if (event.key === 'ArrowUp') {
+      newY -= 1;
+      moved = true;
+    }
+
+    if (event.key === 'ArrowDown') {
+      newY += 1;
+      moved = true;
+    }
+
+    if (moved) {
+      this.movementPoints -= 1;
+
+      if (!dungeon.isWalkableTile(newX, newY)) {
+        const entity = dungeon.entityAtTile(newX, newY);
+
+        if (entity && entity.type === 'enemy' && this.actionPoints > 0) {
+          const currentWeapon = this.currentWeapon();
+          const rangedAttack = currentWeapon.range() > 0
+            ? currentWeapon.attackTile || currentWeapon.tile
+            : false;
+
+          dungeon.attackEntity(this, entity, rangedAttack);
+          this.actionPoints -= 1;
+          this.movementPoints += 1;
+        }
+
+        if (entity && entity.type === 'item' && this.actionPoints > 0) {
+          this.items.push(entity);
+          dungeon.itemPicked(entity);
+          dungeon.log(`${this.name} picked up ${entity.name}: ${entity.description}.`);
+          this.actionPoints -= 1;
+        } else {
+          newX = oldX;
+          newY = oldY;
+        }
+      }
+
+      if (newX !== oldX || newY !== oldY) {
+        dungeon.moveEntityTo(this, newX, newY);
+      }
+    }
   }
 
   over() {
-    const isOver = this.movementPoints === 0 && !this.moving;
+    const isOver = this.movementPoints <= 0 && !this.moving;
 
     if (isOver && this.UIheader) {
       this.UIheader.setColor('#cfc6b8');
+      this.actionPoints = 0;
     } else {
       this.UIheader.setColor('#fff');
-    }
-
-    if (this.UIstatsText) {
-      this.UIstatsText.setText(this.getStatsText());
     }
 
     return isOver;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   onDestroy() {
+    // eslint-disable-next-line no-alert
     alert('OMG! you died!');
+    // eslint-disable-next-line no-restricted-globals
     location.reload();
   }
 
@@ -260,6 +291,10 @@ export default class PlayerCharacter {
         item.UIsprite.setAlpha(1);
         this.UIitems[i].setStrokeStyle(1, 0xffffff);
       }
+    }
+
+    if (this.UIstatsText) {
+      this.UIstatsText.setText(this.getStatsText());
     }
   }
 }

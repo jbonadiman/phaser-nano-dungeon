@@ -15,6 +15,10 @@ export default class GenericItem {
 
   damage() { return 0; }
 
+  protection() { return 0; }
+
+  range() { return 0; }
+
   turn() { }
 
   equip() { }

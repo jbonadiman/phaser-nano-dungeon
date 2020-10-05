@@ -1,6 +1,11 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable import/extensions */
 /* eslint-disable no-undef */
 import dungeon from '../dungeon.js';
+import Gem from '../items/gem.js';
+import LongSword from '../items/longSword.js';
+import Potion from '../items/potion.js';
+import turnManager from '../turnManager.js';
 
 const initial = {
   MP: 1,
@@ -27,9 +32,12 @@ export default class Skeleton {
     this.actionPoints = initial.AP;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   attack() {
     return 1;
+  }
+
+  protection() {
+    return 0;
   }
 
   turn() {
@@ -71,9 +79,23 @@ export default class Skeleton {
   }
 
   onDestroy() {
-    dungeon.log(`${this.name} was killed`);
+    dungeon.log(`${this.name} was killed.`);
     this.UIsprite.setAlpha(0.2);
     this.UItext.setAlpha(0.2);
+
+    const possibleLoot = [
+      false, false,
+      Gem,
+      LongSword,
+      Potion,
+    ];
+
+    const lootIndex = Phaser.Math.Between(0, possibleLoot.length - 1);
+    if (possibleLoot[lootIndex]) {
+      const Item = possibleLoot[lootIndex];
+      turnManager.addEntity(new Item(this.x, this.y));
+      dungeon.log(`${this.name} drops ${Item.name}.`);
+    }
   }
 
   createUI(config) {

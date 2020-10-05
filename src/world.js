@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 import dungeon from './dungeon.js';
 import turnManager from './turnManager.js';
-import Player from './player.js';
+import classes from './classes.js';
 import Skeleton from './enemies/skeleton.js';
 import CursedGem from './items/cursedGem.js';
 import Gem from './items/gem.js';
@@ -26,7 +26,7 @@ const world = {
 
   create() {
     dungeon.initialize(this);
-    dungeon.player = new Player(15, 15);
+    dungeon.player = new classes.Warrior(15, 15);
     turnManager.addEntity(dungeon.player);
     turnManager.addEntity(new Skeleton(20, 20));
     turnManager.addEntity(new Skeleton(20, 10));

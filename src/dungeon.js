@@ -118,36 +118,78 @@ const dungeon = {
     return false;
   },
 
-  attackEntity(attacker, victim) {
+  attackEntity(attacker, victim, rangedAttack = false) {
     attacker.moving = true;
     attacker.tweens = attacker.tweens || 0;
     attacker.tweens += 1;
 
-    this.scene.tweens.add({
-      targets: attacker.sprite,
-      onComplete: () => {
-        attacker.sprite.x = this.map.tileToWorldX(attacker.x);
-        attacker.sprite.y = this.map.tileToWorldX(attacker.y);
-        attacker.moving = false;
-        attacker.tweens -= 1;
+    const attackMsg = `${attacker.name} does REPL_DAMAGE damage to ${victim.name}.`;
 
-        const damage = attacker.attack();
-        victim.healthPoints -= damage;
+    if (!rangedAttack) {
+      this.scene.tweens.add({
+        targets: attacker.sprite,
+        onComplete: () => {
+          attacker.sprite.x = this.map.tileToWorldX(attacker.x);
+          attacker.sprite.y = this.map.tileToWorldY(attacker.y);
+          attacker.moving = false;
+          attacker.tweens -= 1;
 
-        this.log(`${attacker.name} does ${damage} damage to ${victim.name} which now has ${victim.healthPoints} life left`);
+          const attack = attacker.attack();
+          const protection = victim.protection();
+          const damage = attack - protection;
 
-        if (victim.healthPoints <= 0) {
-          this.removeEntity(victim);
-        }
-      },
-      x: this.map.tileToWorldX(victim.x),
-      y: this.map.tileToWorldY(victim.y),
-      ease: 'Power2',
-      hold: 20,
-      duration: 80,
-      delay: attacker.tweens * 200,
-      yoyo: true,
-    });
+          if (damage > 0) {
+            victim.healthPoints -= damage;
+            this.log(attackMsg.replace('REPL_DAMAGE', damage));
+
+            if (victim.healthPoints <= 0) {
+              this.removeEntity(victim);
+            }
+          }
+        },
+        x: this.map.tileToWorldX(victim.x),
+        y: this.map.tileToWorldY(victim.y),
+        ease: 'Power2',
+        hold: 20,
+        duration: 80,
+        delay: attacker.tweens * 200,
+        yoyo: true,
+      });
+    } else {
+      const x = this.map.tileToWorldX(attacker.x);
+      const y = this.map.tileToWorldY(attacker.y);
+      const sprite = dungeon.scene.add
+        .sprite(x, y, 'tiles', rangedAttack)
+        .setOrigin(0);
+
+      this.scene.tweens.add({
+        targets: sprite,
+        onComplete: () => {
+          attacker.moving = false;
+          attacker.tweens -= 1;
+
+          const attack = attacker.attack();
+          const protection = victim.protection();
+          const damage = attack - protection;
+
+          if (damage > 0) {
+            victim.healthPoints -= damage;
+            this.log(attackMsg.replace('REPL_DAMAGE', damage));
+
+            if (victim.healthPoints <= 0) {
+              this.removeEntity(victim);
+            }
+          }
+          sprite.destroy();
+        },
+        x: this.map.tileToWorldX(victim.x),
+        y: this.map.tileToWorldY(victim.y),
+        ease: 'Power2',
+        hold: 20,
+        duration: 180,
+        delay: attacker.tweens * 200,
+      });
+    }
   },
   log(text) {
     this.msgs.unshift(text);
