@@ -61,10 +61,17 @@ const dungeon = {
   },
 
   removeEntity(entity) {
-    turnManager.entities.delete(entity);
-    entity.sprite.destroy();
-    delete entity.sprite;
+    // Weird bug when killing skeletons:
+    /*
+    dungeon.js:64 Uncaught TypeError: Cannot read property 'destroy' of undefined
+    */
+    if (entity.sprite) {
+      entity.sprite.destroy();
+      delete entity.sprite;
+    }
+
     entity.onDestroy();
+    turnManager.entities.delete(entity);
   },
 
   itemPicked(entity) {
