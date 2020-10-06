@@ -114,9 +114,11 @@ export default class GenericClass {
         ? currentWeapon.attackTile || currentWeapon.tile
         : false;
 
+      const tint = currentWeapon.tint || false;
+
       const distance = dungeon.distanceBetweenEntities(this, entity);
       if (rangedAttack && distance <= currentWeapon.range()) {
-        dungeon.attackEntity(this, entity, rangedAttack);
+        dungeon.attackEntity(this, entity, rangedAttack, tint);
         this.actionPoints -= 1;
       }
     }
@@ -179,7 +181,8 @@ export default class GenericClass {
             ? currentWeapon.attackTile || currentWeapon.tile
             : false;
 
-          dungeon.attackEntity(this, entity, rangedAttack);
+          const tint = currentWeapon.tint || false;
+          dungeon.attackEntity(this, entity, rangedAttack, tint);
           this.actionPoints -= 1;
           this.movementPoints += 1;
         }
@@ -282,6 +285,10 @@ export default class GenericClass {
         const x = this.UIitems[i].x + 10;
         const y = this.UIitems[i].y + 10;
         item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile);
+        if (item.tint) {
+          item.UIsprite.tint = item.tint;
+          item.UIsprite.tintFill = true;
+        }
       }
 
       if (!item.active) {

@@ -86,6 +86,10 @@ const dungeon = {
 
       entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
       entity.sprite.setOrigin(0);
+      if (entity.tint) {
+        entity.sprite.tint = entity.tint;
+        entity.sprite.tintFill = true;
+      }
     }
   },
 
@@ -125,7 +129,7 @@ const dungeon = {
     return false;
   },
 
-  attackEntity(attacker, victim, rangedAttack = false) {
+  attackEntity(attacker, victim, rangedAttack = false, tint = false) {
     attacker.moving = true;
     attacker.tweens = attacker.tweens || 0;
     attacker.tweens += 1;
@@ -168,6 +172,11 @@ const dungeon = {
       const sprite = dungeon.scene.add
         .sprite(x, y, 'tiles', rangedAttack)
         .setOrigin(0);
+
+      if (tint) {
+        sprite.tint = tint;
+        sprite.tintFill = true;
+      }
 
       this.scene.tweens.add({
         targets: sprite,

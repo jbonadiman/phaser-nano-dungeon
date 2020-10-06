@@ -26,7 +26,7 @@ const world = {
 
   create() {
     dungeon.initialize(this);
-    dungeon.player = new classes.Dwarf(15, 15);
+    dungeon.player = new classes.Wizard(15, 15);
     turnManager.addEntity(dungeon.player);
     turnManager.addEntity(new Skeleton(20, 20));
     turnManager.addEntity(new Skeleton(20, 10));
