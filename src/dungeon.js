@@ -47,6 +47,20 @@ const dungeon = {
     return dungeon.map.getTileAt(x, y).index !== dungeon.sprites.wall;
   },
 
+  randomWalkableTile() {
+    let x = Phaser.Math.Between(0, dungeon.level[0].length - 1);
+    let y = Phaser.Math.Between(0, dungeon.level.length - 1);
+    let tileAtDestination = dungeon.map.getTileAt(x, y);
+
+    while (typeof tileAtDestination === 'undefined' || tileAtDestination.index === dungeon.sprites.wall) {
+      x = Phaser.Math.Between(0, dungeon.level[0].length - 1);
+      y = Phaser.Math.Between(0, dungeon.level.length - 1);
+      tileAtDestination = dungeon.map.getTileAt(x, y);
+    }
+
+    return { x, y };
+  },
+
   entityAtTile(x, y) {
     const allEntities = [...turnManager.entities];
     for (let i = 0; i < allEntities.length; i += 1) {
@@ -93,6 +107,16 @@ const dungeon = {
     }
   },
 
+  describeEntity(entity) {
+    if (entity) {
+      const { name } = entity;
+      const description = entity.description || '';
+      const tags = entity.tags ? entity.tags.map((tag) => `#${tag}`).join(', ') : '';
+
+      dungeon.log(`${name}\n${tags}\n${description}`);
+    }
+  },
+
   moveEntityTo(entity, x, y) {
     entity.moving = true;
     entity.x = x;
@@ -129,12 +153,15 @@ const dungeon = {
     return false;
   },
 
-  attackEntity(attacker, victim, rangedAttack = false, tint = false) {
+  attackEntity(attacker, victim, weapon) {
     attacker.moving = true;
     attacker.tweens = attacker.tweens || 0;
     attacker.tweens += 1;
 
     const attackMsg = `${attacker.name} does REPL_DAMAGE damage to ${victim.name}.`;
+
+    const rangedAttack = weapon.range() ? weapon.attackTile : false;
+    const tint = weapon.range() && weapon.tint ? weapon.tint : false;
 
     if (!rangedAttack) {
       this.scene.tweens.add({
@@ -149,9 +176,12 @@ const dungeon = {
           const protection = victim.protection();
           const damage = attack - protection;
 
+          this.log(`${victim.name} defends with ${protection}.`);
           if (damage > 0) {
             victim.healthPoints -= damage;
             this.log(attackMsg.replace('REPL_DAMAGE', damage));
+
+            weapon.executeTag('damagedEntity', victim);
 
             if (victim.healthPoints <= 0) {
               this.removeEntity(victim);
@@ -188,6 +218,7 @@ const dungeon = {
           const protection = victim.protection();
           const damage = attack - protection;
 
+          this.log(`${victim.name} defends with ${protection}.`);
           if (damage > 0) {
             victim.healthPoints -= damage;
             this.log(attackMsg.replace('REPL_DAMAGE', damage));

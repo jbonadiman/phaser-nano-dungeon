@@ -1,12 +1,12 @@
 /* eslint-disable import/extensions */
 /* eslint-disable no-undef */
-import dungeon from '../dungeon.js';
-import Taggable from '../taggable.js';
+import dungeon from '../../dungeon.js';
+import Taggable from '../../taggable.js';
 
 export default class BaseClass extends Taggable {
   constructor(x, y) {
     super(x, y);
-    this.name = 'classless hero';
+    this.name = 'base class';
     this.movementPoints = 1;
     this.actionPoints = 1;
     this.healthPoints = 30;
@@ -48,7 +48,7 @@ export default class BaseClass extends Taggable {
 
       if (item.active) {
         dungeon.log(`${this.name} equips ${item.name}: ${item.description}.`);
-        item.equip(itemNumber);
+        item.equip(itemNumber, this);
       }
     }
   }
