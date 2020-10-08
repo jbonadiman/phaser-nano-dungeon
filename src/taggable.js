@@ -19,7 +19,7 @@ export default class Taggable {
     if (this.tagHandlers && this.tagHandlers[handlerName]) {
       this.tagHandlers[handlerName].forEach((handler) => {
         args = [ret, ...args];
-        ret = handler.apply(this.args);
+        ret = handler.apply(this, args);
       });
     }
 
@@ -42,6 +42,9 @@ export default class Taggable {
 
     const { name } = tag;
     delete tag.name;
+
+    tag.initialize.apply(this);
+    delete tag.initialize;
 
     Object.keys(tag).forEach((handlerName) => {
       this.wrapFunction(handlerName);
@@ -83,5 +86,7 @@ export default class Taggable {
         this.addTag(tags[template]);
       }
     });
+
+    return this;
   }
 }

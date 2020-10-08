@@ -118,11 +118,9 @@ export default class BaseClass extends Taggable {
         ? currentWeapon.attackTile || currentWeapon.tile
         : false;
 
-      const tint = currentWeapon.tint || false;
-
       const distance = dungeon.distanceBetweenEntities(this, entity);
       if (rangedAttack && distance <= currentWeapon.range()) {
-        dungeon.attackEntity(this, entity, rangedAttack, tint);
+        dungeon.attackEntity(this, entity, currentWeapon);
         this.actionPoints -= 1;
       }
     }
@@ -181,12 +179,7 @@ export default class BaseClass extends Taggable {
 
         if (entity && entity.type === 'enemy' && this.actionPoints > 0) {
           const currentWeapon = this.currentWeapon();
-          const rangedAttack = currentWeapon.range() > 0
-            ? currentWeapon.attackTile || currentWeapon.tile
-            : false;
-
-          const tint = currentWeapon.tint || false;
-          dungeon.attackEntity(this, entity, rangedAttack, tint);
+          dungeon.attackEntity(this, entity, currentWeapon);
           this.actionPoints -= 1;
           this.movementPoints += 1;
         }
@@ -288,7 +281,14 @@ export default class BaseClass extends Taggable {
       if (!item.UIsprite) {
         const x = this.UIitems[i].x + 10;
         const y = this.UIitems[i].y + 10;
-        item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile);
+        item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile)
+          .setInteractive({ useHandCursor: true });
+
+        item.UIsprite.on('pointerup', (pointer) => {
+          if (pointer.leftButtonReleased()) {
+            dungeon.describeEntity(item);
+          }
+        });
         if (item.tint) {
           item.UIsprite.tint = item.tint;
           item.UIsprite.tintFill = true;

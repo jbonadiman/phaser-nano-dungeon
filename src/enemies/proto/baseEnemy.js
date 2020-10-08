@@ -4,13 +4,13 @@ import dungeon from '../../dungeon.js';
 import turnManager from '../../turnManager.js';
 import Taggable from '../../taggable.js';
 import { getRandomItem } from '../../items.js';
-import BaseItem from '../../items/proto/baseItem';
+import BaseItem from '../../items/proto/baseItem.js';
 
 export default class BaseEnemy extends Taggable {
   constructor(x, y) {
     super(x, y);
     this.name = 'base enemy';
-    this.movementsPoints = 1;
+    this.movementPoints = 1;
     this.actionPoints = 1;
     this.healthPoints = 1;
     this.maxHealthPoints = this.healthPoints;
@@ -41,7 +41,7 @@ export default class BaseEnemy extends Taggable {
   }
 
   refresh() {
-    this.movementsPoints = this.refreshRates.movementPoints;
+    this.movementPoints = this.refreshRates.movementPoints;
     this.actionPoints = this.refreshRates.actionPoints;
     if (this.refreshRates.healthPoints > 0 && this.healthPoints <= this.maxHealthPoints) {
       this.healthPoints += this.refreshRates.healthPoints;
@@ -60,7 +60,7 @@ export default class BaseEnemy extends Taggable {
   turn() {}
 
   over() {
-    const isOver = this.movementsPoints === 0 && this.actionPoints === 0 && !this.moving;
+    const isOver = this.movementPoints === 0 && this.actionPoints === 0 && !this.moving;
     if (isOver && this.UItext) {
       this.UItext.setColor('#cfc6b8');
     } else {

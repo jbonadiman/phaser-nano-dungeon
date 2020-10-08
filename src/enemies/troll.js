@@ -5,7 +5,7 @@ import BaseEnemy from './proto/baseEnemy.js';
 export default class Troll extends BaseEnemy {
   constructor(x, y) {
     super(x, y);
-    this.name = 'Orc';
+    this.name = 'Troll';
     this.movementPoints = 2;
     this.actionPoints = 1;
     this.healthPoints = 8;

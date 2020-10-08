@@ -159,6 +159,7 @@ const dungeon = {
     attacker.tweens += 1;
 
     const attackMsg = `${attacker.name} does REPL_DAMAGE damage to ${victim.name}.`;
+    console.log(weapon);
 
     const rangedAttack = weapon.range() ? weapon.attackTile : false;
     const tint = weapon.range() && weapon.tint ? weapon.tint : false;

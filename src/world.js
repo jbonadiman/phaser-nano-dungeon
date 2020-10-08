@@ -2,11 +2,9 @@
 import dungeon from './dungeon.js';
 import turnManager from './turnManager.js';
 import classes from './classes.js';
-import Skeleton from './enemies/skeleton.js';
-import CursedGem from './items/cursedGem.js';
-import Gem from './items/gem.js';
-import LongSword from './items/longSword.js';
-import Potion from './items/potion.js';
+import { getRandomItem } from './items.js';
+import { getRandomEnemy } from './enemies.js';
+
 
 const world = {
   key: 'world-scene',
@@ -28,22 +26,20 @@ const world = {
     dungeon.initialize(this);
     dungeon.player = new classes.Wizard(15, 15);
     turnManager.addEntity(dungeon.player);
-    turnManager.addEntity(new Skeleton(20, 20));
-    turnManager.addEntity(new Skeleton(20, 10));
-    turnManager.addEntity(new Skeleton(76, 10));
-    turnManager.addEntity(new Skeleton(29, 24));
-    turnManager.addEntity(new Skeleton(29, 20));
 
-    turnManager.addEntity(dungeon.player);
-    turnManager.addEntity(new Skeleton(20, 20));
-    turnManager.addEntity(new Skeleton(20, 10));
-    turnManager.addEntity(new CursedGem(15, 20));
-    turnManager.addEntity(new Potion(18, 18));
-    turnManager.addEntity(new LongSword(18, 22));
-    turnManager.addEntity(new Gem(21, 21));
-    turnManager.addEntity(new Skeleton(76, 10));
-    turnManager.addEntity(new Skeleton(29, 24));
-    turnManager.addEntity(new Skeleton(29, 20));
+    let monsterCount = 10;
+    while (monsterCount > 0) {
+      const tile = dungeon.randomWalkableTile();
+      turnManager.addEntity(getRandomEnemy(tile.x, tile.y));
+      monsterCount -= 1;
+    }
+
+    let itemCount = 10;
+    while (itemCount > 0) {
+      const tile = dungeon.randomWalkableTile();
+      turnManager.addEntity(getRandomItem(tile.x, tile.y));
+      itemCount -= 1;
+    }
 
     const camera = this.cameras.main;
     camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);
