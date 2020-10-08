@@ -1,6 +1,10 @@
+/* eslint-disable import/extensions */
 /* eslint-disable class-methods-use-this */
-export default class GenericItem {
+import Taggable from '../../taggable.js';
+
+export default class BaseItem extends Taggable {
   constructor(x, y) {
+    super(x, y);
     this.active = false;
     this.type = 'item';
     this.weapon = false;

@@ -1,9 +1,9 @@
 /* eslint-disable import/extensions */
-import GenericClass from './genericClass.js';
+import BaseClass from './proto/baseClass.js';
 import Hammer from '../items/hammer.js';
 import dungeon from '../dungeon.js';
 
-export default class Cleric extends GenericClass {
+export default class Cleric extends BaseClass {
   constructor(x, y) {
     super(x, y);
 

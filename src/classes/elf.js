@@ -1,9 +1,9 @@
 /* eslint-disable import/extensions */
-import GenericClass from './genericClass.js';
+import BaseClass from './proto/baseClass.js';
 import Bow from '../items/bow.js';
 import dungeon from '../dungeon.js';
 
-export default class Elf extends GenericClass {
+export default class Elf extends BaseClass {
   constructor(x, y) {
     super(x, y);
 

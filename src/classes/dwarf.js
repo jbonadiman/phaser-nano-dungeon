@@ -1,10 +1,10 @@
 /* eslint-disable import/extensions */
-import GenericClass from './genericClass.js';
+import BaseClass from './proto/baseClass.js';
 import Axe from '../items/axe.js';
 import Shield from '../items/shield.js';
 import dungeon from '../dungeon.js';
 
-export default class Dwarf extends GenericClass {
+export default class Dwarf extends BaseClass {
   constructor(x, y) {
     super(x, y);
 

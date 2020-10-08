@@ -1,11 +1,11 @@
 /* eslint-disable import/extensions */
-import GenericClass from './genericClass.js';
+import BaseClass from './proto/baseClass.js';
 import ScrollOfFireball from '../items/scrollOfFireball.js';
 import ScrollOfLightning from '../items/scrollOfLightning.js';
 import HealthPotion from '../items/healthPotion.js';
 import dungeon from '../dungeon.js';
 
-export default class Wizard extends GenericClass {
+export default class Wizard extends BaseClass {
   constructor(x, y) {
     super(x, y);
 

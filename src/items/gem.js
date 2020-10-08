@@ -1,8 +1,8 @@
 /* eslint-disable import/extensions */
-import GenericItem from './genericItem.js';
+import BaseItem from './proto/baseItem.js';
 import dungeon from '../dungeon.js';
 
-export default class Gem extends GenericItem {
+export default class Gem extends BaseItem {
   constructor(x, y) {
     super(x, y);
     this.tile = 720;

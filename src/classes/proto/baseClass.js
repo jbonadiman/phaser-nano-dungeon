@@ -1,9 +1,11 @@
 /* eslint-disable import/extensions */
 /* eslint-disable no-undef */
 import dungeon from '../dungeon.js';
+import Taggable from '../taggable.js';
 
-export default class GenericClass {
+export default class BaseClass extends Taggable {
   constructor(x, y) {
+    super(x, y);
     this.name = 'classless hero';
     this.movementPoints = 1;
     this.actionPoints = 1;
@@ -15,8 +17,10 @@ export default class GenericClass {
     this.type = 'character';
     this.items = [];
 
+    dungeon.scene.input.keyboard.addCapture(['SPACE', 'UP', 'DOWN', 'LEFT', 'RIGHT']);
     dungeon.scene.input.keyboard.on('keyup', (event) => {
       if (!this.over()) this.processInput(event);
+      event.stopPropagation();
     });
 
     dungeon.scene.input.on('pointerup', (event) => {

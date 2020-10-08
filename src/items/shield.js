@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable import/extensions */
-import GenericItem from './genericItem.js';
+import BaseItem from './proto/baseItem.js';
 import dungeon from '../dungeon.js';
 
-export default class Shield extends GenericItem {
+export default class Shield extends BaseItem {
   constructor(x, y) {
     super(x, y);
     this.tile = 776;
