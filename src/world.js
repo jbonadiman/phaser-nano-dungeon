@@ -1,10 +1,10 @@
 /* eslint-disable import/extensions */
 import dungeon from './dungeon.js';
+import BSPDungeon from './dungeon/bspDungeon.js';
 import turnManager from './turnManager.js';
 import classes from './classes.js';
 import { getRandomItem } from './items.js';
 import { getRandomEnemy } from './enemies.js';
-
 
 const world = {
   key: 'world-scene',
@@ -23,8 +23,13 @@ const world = {
   },
 
   create() {
-    dungeon.initialize(this);
-    dungeon.player = new classes.Wizard(15, 15);
+    const dg = new BSPDungeon(80, 50, 4);
+    const level = dg.toLevelData();
+    dungeon.initialize(this, level);
+
+    const playerPos = dungeon.randomWalkableTile();
+
+    dungeon.player = new classes.Wizard(playerPos.x, playerPos.y);
     turnManager.addEntity(dungeon.player);
 
     let monsterCount = 10;
