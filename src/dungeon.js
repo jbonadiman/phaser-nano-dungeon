@@ -14,7 +14,6 @@ const dungeon = {
   initialize(scene, level) {
     this.scene = scene;
     this.level = level;
-    // console.log(level);
 
     this.levelWithTiles = level.map(
       (row) => row.map((tile) => (tile === 1 ? this.sprites.wall : this.sprites.floor)),
@@ -59,6 +58,21 @@ const dungeon = {
     }
 
     return { x, y };
+  },
+
+  randomWalkableTileInRoom(x, y, width, height) {
+    let rx = Phaser.Math.Between(x, (x + width) - 1);
+    let ry = Phaser.Math.Between(y, (y + height) - 1);
+
+    let tileAtDestination = dungeon.map.getTileAt(rx, ry);
+    while (typeof tileAtDestination === 'undefined' || tileAtDestination.index === dungeon.sprites.wall) {
+      rx = Phaser.Math.Between(x, (x + width) - 1);
+      ry = Phaser.Math.Between(y, (y + height) - 1);
+
+      tileAtDestination = dungeon.map.getTileAt(rx, ry);
+    }
+
+    return { x: rx, y: ry };
   },
 
   entityAtTile(x, y) {

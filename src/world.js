@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable import/extensions */
 import dungeon from './dungeon.js';
 import BSPDungeon from './dungeon/bspDungeon.js';
@@ -27,24 +28,64 @@ const world = {
     const level = dg.toLevelData();
     dungeon.initialize(this, level);
 
-    const playerPos = dungeon.randomWalkableTile();
+    const rooms = dg.getRooms();
+
+    let node = dg.tree.left;
+    while (node.left !== false) {
+      node = node.left;
+    }
+
+    const { room } = node.area;
+
+    const playerPos = dungeon.randomWalkableTileInRoom(room.x, room.y, room.width, room.height);
 
     dungeon.player = new classes.Wizard(playerPos.x, playerPos.y);
     turnManager.addEntity(dungeon.player);
 
-    let monsterCount = 10;
-    while (monsterCount > 0) {
-      const tile = dungeon.randomWalkableTile();
-      turnManager.addEntity(getRandomEnemy(tile.x, tile.y));
-      monsterCount -= 1;
-    }
+    rooms.forEach((r) => {
+      // const area = room.width * room.height;
+      let monsterCount = 0;
+      let itemCount = 0;
 
-    let itemCount = 10;
-    while (itemCount > 0) {
-      const tile = dungeon.randomWalkableTile();
-      turnManager.addEntity(getRandomItem(tile.x, tile.y));
-      itemCount -= 1;
-    }
+      const roomType = Phaser.Math.RND.weightedPick(
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3],
+      );
+
+      switch (roomType) {
+        default:
+        // empty room
+          monsterCount = 0;
+          itemCount = 0;
+          break;
+        case 1:
+          // a monster
+          monsterCount = 1;
+          itemCount = 0;
+          break;
+        case 2:
+          // monster and items.
+          monsterCount = 2;
+          itemCount = 1;
+          break;
+        case 3:
+          // treasure room.
+          monsterCount = 0;
+          itemCount = 5;
+          break;
+      }
+
+      while (monsterCount > 0) {
+        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.width, r.height);
+        turnManager.addEntity(getRandomEnemy(tile.x, tile.y));
+        monsterCount -= 1;
+      }
+
+      while (itemCount > 0) {
+        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.width, r.height);
+        turnManager.addEntity(getRandomItem(tile.x, tile.y));
+        itemCount -= 1;
+      }
+    });
 
     const camera = this.cameras.main;
     camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);

@@ -137,4 +137,13 @@ export default class BSPDungeon {
   toLevelData() {
     return this.levelData;
   }
+
+  getRooms() {
+    const rooms = [];
+    this.tree.forEachLeaf((area) => {
+      rooms.push(area.room);
+    });
+
+    return rooms;
+  }
 }
