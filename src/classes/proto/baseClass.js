@@ -16,7 +16,9 @@ export default class BaseClass extends Taggable {
     this.moving = false;
     this.type = 'character';
     this.items = [];
+  }
 
+  setEvents() {
     dungeon.scene.input.keyboard.addCapture(['SPACE', 'UP', 'DOWN', 'LEFT', 'RIGHT']);
     dungeon.scene.input.keyboard.on('keyup', (event) => {
       if (!this.over()) this.processInput(event);
@@ -144,6 +146,16 @@ export default class BaseClass extends Taggable {
       this.toggleItem(key - 1);
     }
 
+    if (event.key === 'd') {
+      dungeon.goDown();
+      return;
+    }
+
+    if (event.key === 'u') {
+      dungeon.goUp();
+      return;
+    }
+
     // Spacebar check
     if (event.keyCode === 32) {
       this.movementPoints = 0;
@@ -192,6 +204,14 @@ export default class BaseClass extends Taggable {
         } else {
           newX = oldX;
           newY = oldY;
+        }
+
+        if (entity && entity.type === 'stairs') {
+          if (entity.direction === 'down') {
+            dungeon.goDown();
+          } else {
+            dungeon.goUp();
+          }
         }
       }
 
@@ -307,5 +327,21 @@ export default class BaseClass extends Taggable {
     if (this.UIstatsText) {
       this.UIstatsText.setText(this.getStatsText());
     }
+  }
+
+  cleanup() {
+    delete this.UIheader;
+    delete this.UIstatsText;
+    delete this.UIsprite;
+    delete this.UIitems;
+    delete this.UIscene;
+    delete this.sprite;
+
+    this.items.forEach((item) => {
+      if (item.UIsprite) {
+        // eslint-disable-next-line no-param-reassign
+        delete item.UIsprite;
+      }
+    });
   }
 }

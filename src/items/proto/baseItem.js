@@ -17,6 +17,8 @@ export default class BaseItem extends Taggable {
     }
   }
 
+  setEvents() {}
+
   damage() { return 0; }
 
   protection() { return 0; }

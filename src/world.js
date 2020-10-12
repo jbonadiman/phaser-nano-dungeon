@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable import/extensions */
 import dungeon from './dungeon.js';
-import BSPDungeon from './dungeon/bspDungeon.js';
 import turnManager from './turnManager.js';
 import classes from './classes.js';
 import { getRandomItem } from './items.js';
@@ -24,22 +23,39 @@ const world = {
   },
 
   create() {
-    const dg = new BSPDungeon(80, 50, 4);
-    const level = dg.toLevelData();
-    dungeon.initialize(this, level);
+    this.events.once('dungeon-changed', () => {
+      this.scene.restart();
+    });
 
-    const rooms = dg.getRooms();
+    dungeon.initialize(this);
+    const { rooms, stairs } = dungeon;
 
-    let node = dg.tree.left;
+    if (stairs.down) {
+      turnManager.addEntity(new Stairs(stairs.down.x, stairs.down.y, 'down'));
+    }
+
+    if (stairs.up) {
+      turnManager.addEntity(new Stairs(stairs.up.x, stairs.up.y, 'up'));
+    }
+
+    let node = dungeon.tree.left;
     while (node.left !== false) {
       node = node.left;
     }
 
     const { room } = node.area;
 
-    const playerPos = dungeon.randomWalkableTileInRoom(room.x, room.y, room.width, room.height);
+    const playerPos = dungeon.randomWalkableTileInRoom(room.x, room.y, room.w, room.h);
 
-    dungeon.player = new classes.Wizard(playerPos.x, playerPos.y);
+    if (!dungeon.player) {
+      dungeon.player = new classes.Elf(playerPos.x, playerPos.y);
+    } else {
+      dungeon.player.x = playerPos.x;
+      dungeon.player.y = playerPos.y;
+      dungeon.player.refresh();
+      dungeon.initializeEntity(dungeon.player);
+    }
+
     turnManager.addEntity(dungeon.player);
 
     rooms.forEach((r) => {
@@ -75,20 +91,20 @@ const world = {
       }
 
       while (monsterCount > 0) {
-        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.width, r.height);
+        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.w, r.h);
         turnManager.addEntity(getRandomEnemy(tile.x, tile.y));
         monsterCount -= 1;
       }
 
       while (itemCount > 0) {
-        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.width, r.height);
+        const tile = dungeon.randomWalkableTileInRoom(r.x, r.y, r.w, r.h);
         turnManager.addEntity(getRandomItem(tile.x, tile.y));
         itemCount -= 1;
       }
     });
 
     const camera = this.cameras.main;
-    camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);
+    camera.setViewport(0, 0, camera.worldView.width - 220, camera.worldView.height);
     camera.setBounds(0, 0, camera.worldView.width, camera.worldView.height);
     camera.startFollow(dungeon.player.sprite);
 

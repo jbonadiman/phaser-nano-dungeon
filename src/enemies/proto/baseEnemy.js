@@ -40,6 +40,9 @@ export default class BaseEnemy extends Taggable {
     this.type = 'enemy';
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  setEvents() {}
+
   refresh() {
     this.movementPoints = this.refreshRates.movementPoints;
     this.actionPoints = this.refreshRates.actionPoints;

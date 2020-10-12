@@ -1,8 +1,8 @@
 export default class DArea {
-  constructor(x, y, width, height) {
+  constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.w = w;
+    this.h = h;
   }
 }

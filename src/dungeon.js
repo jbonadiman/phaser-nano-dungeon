@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-undef */
 /* eslint-disable import/extensions */
 import turnManager from './turnManager.js';
+import BSPDungeon from './dungeon/bspDungeon.js';
 
 const dungeon = {
   msgs: [],
@@ -10,12 +12,29 @@ const dungeon = {
     wall: 554,
   },
   tileSize: 16,
+  initialized: false,
 
-  initialize(scene, level) {
+  initialize(scene) {
+    if (!this.initialized) {
+      console.log('dungeon not initialized');
+
+      const dungeonConfig = {
+        width: 80,
+        height: 50,
+        iterations: 4,
+        levels: 5,
+      };
+      this.dungeon = new BSPDungeon(dungeonConfig);
+      this.initialized = true;
+    }
+
+    console.log(`dungeon module: current dungeon level ${this.dungeon.currentLevel}`);
+    this.level = this.dungeon.getCurrentLevel();
+    this.rooms = this.dungeon.getRooms();
+    this.tree = this.dungeon.getTree();
+    this.stairs = this.dungeon.getStairs();
     this.scene = scene;
-    this.level = level;
-
-    this.levelWithTiles = level.map(
+    this.levelWithTiles = this.level.map(
       (row) => row.map((tile) => (tile === 1 ? this.sprites.wall : this.sprites.floor)),
     );
 
@@ -31,6 +50,32 @@ const dungeon = {
     );
 
     this.map = map.createDynamicLayer(0, tileset, 0, 0);
+  },
+
+  cleanup() {
+    this.msgs = [];
+    dungeon.player.cleanup();
+    turnManager.cleanup();
+  },
+
+  goDown() {
+    this.scene.cameras.main.once('camerafadeoutcomplete', () => {
+      this.cleanup();
+      this.dungeon.goDown();
+
+      this.scene.events.emit('dungeon-changed');
+    }, this);
+    this.scene.cameras.main.fadeOut(1000, 0, 0, 0);
+  },
+
+  goUp() {
+    this.scene.cameras.main.once('camerafadeoutcomplete', () => {
+      this.cleanup();
+      this.dungeon.goUp();
+
+      this.scene.events.emit('dungeon-changed');
+    }, this);
+    this.scene.cameras.main.fadeOut(1000, 0, 0, 0);
   },
 
   isWalkableTile(x, y) {
@@ -118,6 +163,7 @@ const dungeon = {
         entity.sprite.tint = entity.tint;
         entity.sprite.tintFill = true;
       }
+      entity.setEvents();
     }
   },
 

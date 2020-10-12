@@ -8,6 +8,10 @@ const ui = {
   create() {
     this.createdUI = false;
 
+    this.scene.get('world-scene').events.once('dungeon-changed', () => {
+      this.scene.restart();
+    });
+
     this.scene.get('world-scene').events.on('createUI', () => {
       const x = (80 * 16) - 190;
       let y = 10;
@@ -36,6 +40,7 @@ const ui = {
       });
 
       this.createdUI = true;
+      dungeon.ui = this;
     });
   },
   update() {
